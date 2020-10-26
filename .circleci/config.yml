@@ -40,36 +40,18 @@ jobs:
 workflows:
     build:
       when:
-        or:
-          - and:
-            - equal: [ false, << pipeline.parameters.build-workflow-only >> ]
-            - equal: [ false, << pipeline.parameters.api >> ]
-          - and:
-            - equal: [ true, << pipeline.parameters.build-workflow-only >> ]
-            - equal: [ true, << pipeline.parameters.api >> ]
+        equal: [ << pipeline.parameters.api >> , << pipeline.parameters.build-workflow-only >> ]
       jobs:
         - build
 
     test:
       when:
-        or:
-          - and:
-            - equal: [ false, << pipeline.parameters.test-workflow-only >> ]
-            - equal: [ false, << pipeline.parameters.api >> ]
-          - and:
-            - equal: [ true, << pipeline.parameters.test-workflow-only >> ]
-            - equal: [ true, << pipeline.parameters.api >> ]
+        equal: [ << pipeline.parameters.api >>, << pipeline.parameters.test-workflow-only >> ]
       jobs:
         - test
 
     broad-deployment:
       when:
-        or:
-          - and:
-            - equal: [ false, << pipeline.parameters.broad-deployment-workflow-only >> ]
-            - equal: [ false, << pipeline.parameters.api >> ]
-          - and:
-            - equal: [ true, << pipeline.parameters.broad-deployment-workflow-only >> ]
-            - equal: [ true, << pipeline.parameters.api >> ]
+        equal: [ << pipeline.parameters.api >>, << pipeline.parameters.broad-deployment-workflow-only >> ]
       jobs:
         - deploy-to-heroku
