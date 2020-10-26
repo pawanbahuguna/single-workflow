@@ -1,0 +1,75 @@
+version: 2.1
+
+parameters:
+  build-workflow-only:
+    type: boolean
+    default: false
+
+  test-workflow-only:
+    type: boolean
+    default: false
+
+  broad-deployment-workflow-only:
+    type: boolean
+    default: false
+
+  api:
+    type: boolean
+    default: false
+
+orbs:
+  heroku: circleci/heroku@1.2.2
+
+jobs:
+  deploy-to-heroku:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - run: echo "deploy"
+  build:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - run: echo "build"
+  test:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - run: echo "test"
+
+workflows:
+    build:
+      when:
+        or:
+          - and:
+            - equal: [ false, << pipeline.parameters.build-workflow-only >> ]
+            - equal: [ false, << pipeline.parameters.api >> ]
+          - and:
+            - equal: [ true, << pipeline.parameters.build-workflow-only >> ]
+            - equal: [ true, << pipeline.parameters.api >> ]
+      jobs:
+        - build
+
+    test:
+      when:
+        or:
+          - and:
+            - equal: [ false, << pipeline.parameters.test-workflow-only >> ]
+            - equal: [ false, << pipeline.parameters.api >> ]
+          - and:
+            - equal: [ true, << pipeline.parameters.test-workflow-only >> ]
+            - equal: [ true, << pipeline.parameters.api >> ]
+      jobs:
+        - test
+
+    broad-deployment:
+      when:
+        or:
+          - and:
+            - equal: [ false, << pipeline.parameters.broad-deployment-workflow-only >> ]
+            - equal: [ false, << pipeline.parameters.api >> ]
+          - and:
+            - equal: [ true, << pipeline.parameters.broad-deployment-workflow-only >> ]
+            - equal: [ true, << pipeline.parameters.api >> ]
+      jobs:
+        - deploy-to-heroku
