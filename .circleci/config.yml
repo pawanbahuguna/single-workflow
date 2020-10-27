@@ -1,57 +1,14 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-
-parameters:
-  build-workflow-only:
-    type: boolean
-    default: false
-
-  test-workflow-only:
-    type: boolean
-    default: false
-
-  broad-deployment-workflow-only:
-    type: boolean
-    default: false
-
-  api:
-    type: boolean
-    default: false
-
+# Use a package of configuration called an orb.
 orbs:
-  heroku: circleci/heroku@1.2.2
-
-jobs:
-  deploy-to-heroku:
-    docker:
-      - image: circleci/node:latest
-    steps:
-      - run: echo "deploy"
-  build:
-    docker:
-      - image: circleci/node:latest
-    steps:
-      - run: echo "build"
-  test:
-    docker:
-      - image: circleci/node:latest
-    steps:
-      - run: echo "test"
-
+  # Declare a dependency on the welcome-orb
+  welcome: circleci/welcome-orb@0.4.1
+# Orchestrate or schedule a set of jobs
 workflows:
-    build:
-      when:
-        equal: [ << pipeline.parameters.api >> , << pipeline.parameters.build-workflow-only >> ]
-      jobs:
-        - build
+  # Name the workflow "welcome"
+  welcome:
+    # Run the welcome/run job in its own container
+    jobs:
+      - welcome/run
 
-    test:
-      when:
-        equal: [ << pipeline.parameters.api >>, << pipeline.parameters.test-workflow-only >> ]
-      jobs:
-        - test
-
-    broad-deployment:
-      when:
-        equal: [ << pipeline.parameters.api >>, << pipeline.parameters.broad-deployment-workflow-only >> ]
-      jobs:
-        - deploy-to-heroku
